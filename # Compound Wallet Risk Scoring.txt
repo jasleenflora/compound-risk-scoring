@@ -1,0 +1,25 @@
+# Compound Wallet Risk Scoring
+
+# Data Collection (Assumed)
+For each wallet, we would fetch on-chain Compound V2 transactions (Supply, Borrow, Repay, Liquidation) via Covalent/Etherscan API.
+
+#Features Used
+- **deposit_count / total_deposit_amount** → how much collateral they supplied
+- **borrow_count / total_borrow_amount** → borrowing behavior
+- **repay_ratio** → repaid vs borrowed
+- **liquidation_count** → risky wallets get liquidated more
+- **liquidation_ratio** → normalizing liquidations by borrowing volume
+
+#Scoring Logic
+Base score = 500  
+- +200 if repay_ratio > 0.8  
+- +150 if no liquidations  
+- +50 if deposits > borrows  
+- -200 if liquidation_ratio > 0.3  
+- -100 if borrows > deposits*2  
+Clipped between 0–1000.
+
+#Output
+- `wallet_scores.csv` with `wallet_id,score`
+
+This approach is scalable for any number of wallets and can integrate real Compound on-chain data.
